@@ -219,18 +219,16 @@ async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
 
     try:
-        await query.answer()  # ОТВЕЧАЕМ Боту: "Да, я получил нажатие"
+        await query.answer()  
     except Exception as e:
-        # Если ответ не ушел, логируем ошибку, чтобы бот не завис
+        
         logger.error(f"Не удалось ответить на нажатие кнопки: {e}")
-        return ConversationHandler.END  # Завершаем диалог, чтобы не было зависаний
-        # --- НОВАЯ ПРОВЕРКА ---
-    # Если query или query.message равно None, мы не сможем ничего сделать.
-    # Это может быть причиной "загрузки" и отсутствия ответа.
+        return ConversationHandler.END  
+        
     if not query or not query.message:
         logger.error("Ошибка в button_click: query или query.message равен None.")
         return ConversationHandler.END
-    # --- КОНЕЦ ПРОВЕРКИ ---
+    
     await query.answer()
     chat_id = query.message.chat_id
     job_queue = context.job_queue
@@ -419,8 +417,6 @@ async def cancel_reminders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     job_queue = context.job_queue
 
-    # --- ИЗМЕНЕНИЕ: Ищем задачи по префиксу имени ---
-    # Создаем список префиксов, которые используются для напоминаний
     prefixes = ["cycle_", "first_"]
 
     removed_count = 0
@@ -437,7 +433,6 @@ async def cancel_reminders(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if removed_count == 0:
         logger.info(f"No active reminder jobs found for user {chat_id} to cancel.")
 
-    # Очищаем данные в БД (эта строка у вас уже была и она верная)
     delete_user_data(chat_id)
 
     await update.message.reply_text(MSG_CANCEL_SUCCESS)
