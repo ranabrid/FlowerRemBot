@@ -242,20 +242,44 @@ async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(MSG_POSTPONED_MESSAGE)
         return ConversationHandler.END
 
-    elif query.data == CALLBACK_BOUGHT:
+     elif query.data == CALLBACK_BOUGHT:
         # Пользователь купил цветы. Планируем следующее напоминание через 21 день.
 
         interval = get_interval(chat_id)
 
-if interval is None:
-    logger.warning(f"Interval is missing for {chat_id}, asking to set interval")
+        if interval is None:
+            logger.warning(f"Interval is missing for {chat_id}, skipping scheduling")
 
-    await query.edit_message_text(
-        "💫Молодец! Не забудь указать периодичность напоминаний 👇",
-        reply_markup=interval_keyboard()
-    )
+            await query.edit_message_text(
+                "💫Молодец! Не забудь настроить периодичность 👇",
+                reply_markup=interval_keyboard()
+            )
 
-    return constants.CHOOSING_INTERVAL
+            return constants.CHOOSING_INTERVAL
+
+        interval = int(interval)  # ✔ на том же уровне, что if
+
+        next_remind_date = datetime.now(moscow_tz) + timedelta(days=interval)
+        save_user_date(chat_id, next_remind_date.isoformat())
+
+        new_job_name = f"cycle_{chat_id}"
+
+        existing_jobs = job_queue.get_jobs_by_name(new_job_name)
+        if existing_jobs:
+            for existing_job in existing_jobs:
+                existing_job.schedule_removal()
+                logger.info(f"Removed existing job {new_job_name} before rescheduling.")
+        job_queue.run_once(
+            send_cycle_reminder,
+            when=next_remind_date,
+            chat_id=chat_id,
+            name=new_job_name,
+        )
+        await query.edit_message_text(MSG_BOUGHT_SUCCESS)
+        logger.info(
+            f"Scheduled next reminder for {chat_id} after purchase, in {interval} days."
+        )
+        return ConversationHandler.END
 
         interval = int(interval)
 
