@@ -249,8 +249,8 @@ async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
         interval = get_interval(chat_id)
 
         if interval is None:
-            logger.error(f"Interval is missing for {chat_id}, using fallback 7 days")
-            interval = 7
+            logger.error(f"Interval is missing for {chat_id}, skipping scheduling")
+            return
 
         interval = int(interval)
 
