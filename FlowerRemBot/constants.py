@@ -18,7 +18,7 @@ MOSCOW_TIMEZONE = "Europe/Moscow"
 MSG_WELCOME_START = "🌷 Привет! Я буду напоминать тебе купить цветы"
 MSG_PLAN_DATE = "Когда ты хочешь получить напоминание?"
 MSG_POSTPONED_MESSAGE = "Хорошо, отправь /start, когда передумаешь"
-MSG_BOUGHT_SUCCESS = "💫Молодец! Дата следующего напоминания уже у меня в календаре 😉"
+MSG_BOUGHT_SUCCESS = "💫Молодец!"
 MSG_REMINDER_TEXT = "🌷Пора купить цветы!🌷"
 MSG_DELIVERY_URL = (
     "https://yandex.ru/search/?text=доставка+цветов&clid=2411726&lr=21651"
