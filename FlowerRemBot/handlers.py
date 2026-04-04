@@ -247,9 +247,15 @@ async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         interval = get_interval(chat_id)
 
-        if interval is None:
-            logger.error(f"Interval is missing for {chat_id}, skipping scheduling")
-            return
+if interval is None:
+    logger.warning(f"Interval is missing for {chat_id}, asking to set interval")
+
+    await query.edit_message_text(
+        "💫Молодец! Не забудь указать периодичность напоминаний 👇",
+        reply_markup=interval_keyboard()
+    )
+
+    return constants.CHOOSING_INTERVAL
 
         interval = int(interval)
 
